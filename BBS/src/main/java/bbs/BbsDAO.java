@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베이스 접근을 해서 데이터를 빼오는 역할을 하는 클래스
 	
@@ -36,7 +37,7 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 		return ""; // 데이터베이스 오류
 	}
 	
-	public int getNext() {
+	public int getNext() {  // 다음으로 작성될 글의 번호
 		String SQL = "SELECT bbsID FROM BBS ORDER BY bbsID DESC";
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(SQL);
@@ -69,4 +70,43 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 		return -1; // 데이터베이스 오류
 	}
 	
+	public ArrayList<Bbs> getList(int pageNumber){
+		String SQL = "SELECT * FROM BBS WHERE bbsID < ? AND bbsAvailable = 1 ORDER BY bbsID DESC LIMIT 10";
+		ArrayList<Bbs> list = new ArrayList<Bbs>();
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, getNext() - (pageNumber -1)*10);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {  
+				Bbs bbs = new Bbs(); // 하위 6개 데이터가 bbs에 담김
+				bbs.setBbsID(rs.getInt(1));
+				bbs.setBbsTitle(rs.getString(2));
+				bbs.setUserID(rs.getString(3));
+				bbs.setBbsDate(rs.getString(4));
+				bbs.setBbsContent(rs.getString(5));
+				bbs.setBbsAvailable(rs.getInt(6));
+				list.add(bbs);		// list에 해당 인스턴스를 담아서 반환
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;  // 10개 뽑아온 게시글 리스트 출력
+	}
+	
+	// 게시글이 10단위로 끊김 ex)게시글 10개라면 다음페이지라는 버튼이 없어야함.  페이징처리를 위해 존재하는 함수
+	// 게시글이 11개일때 페이지2개, 게시글 20개 = 페이지 2 / 게시글 21개 = 페이지3으로 늘어남
+		public boolean nextPage(int pageNumber) { 
+		String SQL = "SELECT * FROM BBS WHERE bbsID < ? AND bbsAvailable = 1";		
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, getNext() - (pageNumber -1)*10);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {  
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false; 
+	}
 }
