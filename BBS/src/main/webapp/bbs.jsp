@@ -97,7 +97,7 @@
  						BbsDAO bbsDAO = new BbsDAO(); // 하나의 인스턴스를 만들어줌
  						ArrayList<Bbs> list = bbsDAO.getList(pageNumber);
  						for(int i = 0; i < list.size(); i++) {	
- 					%>
+ 					%> 
  					<tr>
  						<td><%= list.get(i).getBbsID() %></td>  
  						<td><a href="view.jsp?bbsID=<%= list.get(i).getBbsTitle() %>"><%= list.get(i).getBbsTitle() %></a></td>
@@ -110,7 +110,7 @@
  				</tbody>
  			</table>
  			<%
- 				if(pageNumber != 1) {
+ 				if(pageNumber != 1) {  // 페이지넘버가 1이 아닐때(2이상) 이전, 다음 버튼을 만들어줌
  			%>	
  				<a href="bbs.jsp?pageNumber=<%=pageNumber - 1%>" class="btn btn-success btn-arraw-left">이전</a>
  			<%
