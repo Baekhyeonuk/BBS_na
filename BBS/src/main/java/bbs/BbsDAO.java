@@ -95,7 +95,7 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 	
 	// 게시글이 10단위로 끊김 ex)게시글 10개라면 다음페이지라는 버튼이 없어야함.  페이징처리를 위해 존재하는 함수
 	// 게시글이 11개일때 페이지2개, 게시글 20개 = 페이지 2 / 게시글 21개 = 페이지3으로 늘어남
-		public boolean nextPage(int pageNumber) { 
+	public boolean nextPage(int pageNumber) { 
 		String SQL = "SELECT * FROM BBS WHERE bbsID < ? AND bbsAvailable = 1";		
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(SQL);
@@ -108,5 +108,28 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 			e.printStackTrace();
 		}
 		return false; 
+	}
+		
+	public Bbs getBbs(int bbsID) {    // bbsID에 해당하는 숫자의 게시글을 불러옴
+		String SQL = "SELECT * FROM BBS WHERE bbsID = ?";		
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, bbsID);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {  
+				Bbs bbs = new Bbs(); //
+				bbs.setBbsID(rs.getInt(1));
+				bbs.setBbsTitle(rs.getString(2));
+				bbs.setUserID(rs.getString(3));
+				bbs.setBbsDate(rs.getString(4));
+				bbs.setBbsContent(rs.getString(5));
+				bbs.setBbsAvailable(rs.getInt(6));
+				return bbs;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null; 
+		
 	}
 }
