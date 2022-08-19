@@ -11,6 +11,7 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 	private Connection conn;
 	private ResultSet rs;
 	
+	// 기본 생성자
 	public BbsDAO() {
 		try {
 			String dbURL = "jdbc:mysql://localhost:3306/BBS";
@@ -23,6 +24,7 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 		}
 	}
 	
+	//작성일자 메소드
 	public String getDate() {
 		String SQL = "SELECT NOW()";
 		try {
@@ -37,6 +39,7 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 		return ""; // 데이터베이스 오류
 	}
 	
+	// 게시글 번호 부여 메소드
 	public int getNext() {  // 다음으로 작성될 글의 번호
 		String SQL = "SELECT bbsID FROM BBS ORDER BY bbsID DESC";
 		try {
@@ -52,6 +55,7 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 		return -1; // 데이터베이스 오류
 	}
 	
+	//글쓰기 메소드
 	public int write(String bbsTitle, String userID, String bbsContent) {
 		String SQL = "INSERT INTO BBS VALUES (?, ?, ?, ?, ?, ?)";
 		try {
@@ -70,6 +74,7 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 		return -1; // 데이터베이스 오류
 	}
 	
+	// 게시글 리스트 메소드
 	public ArrayList<Bbs> getList(int pageNumber){
 		String SQL = "SELECT * FROM BBS WHERE bbsID < ? AND bbsAvailable = 1 ORDER BY bbsID DESC LIMIT 10";
 		ArrayList<Bbs> list = new ArrayList<Bbs>();
@@ -109,7 +114,8 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 		}
 		return false; 
 	}
-		
+	
+	// 하나의 게시글을 보는 메소드
 	public Bbs getBbs(int bbsID) {    // bbsID에 해당하는 숫자의 게시글을 불러옴
 		String SQL = "SELECT * FROM BBS WHERE bbsID = ?";		
 		try {
@@ -132,13 +138,13 @@ public class BbsDAO {  // 데이터 접근 객체의 약자 - DAO  데이터베�
 		return null; 
 		
 	}
-	
+	// 게시글 수정 메소드
 	public int update(int bbsID, String bbsTitle, String bbsContent) {
 		String SQL = "UPDATE BBS SET bbsTitle = ?, bbsContent = ? WHERE bbsID = ?";
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(SQL);
-			pstmt.setString(1, bbsTitle());
-			pstmt.setString(2, bbsContent());
+			pstmt.setString(1, bbsTitle);
+			pstmt.setString(2, bbsContent);
 			pstmt.setInt(3, bbsID);
 			return pstmt.executeUpdate();
 		} catch (Exception e) {
